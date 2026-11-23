@@ -1,0 +1,125 @@
+[{"stream_name":"stderr","time":6.93423791,"data":"W: Skipping acquire of configured file 'main/source/Sources' as repository 'https://r2u.stat.illinois.edu/ubuntu noble InRelease' does not seem to provide it (sources.list entry misspelt?)\n"}
+,{"stream_name":"stderr","time":9.934483197,"data":"Cloning into '/tmp/kissat'...\n"}
+,{"stream_name":"stdout","time":10.791530286,"data":"configure: new build directory 'build'\n"}
+,{"stream_name":"stdout","time":10.821783598,"data":"configure: assuming GCC version 13.3.0 uses C99 by default\n"}
+,{"stream_name":"stdout","time":10.821816061,"data":"configure: compiler 'gcc  -W -Wall -O3 -DNDEBUG -DQUIET'\n"}
+,{"stream_name":"stdout","time":10.821822385,"data":"configure: linker 'gcc' (no additional options)\n"}
+,{"stream_name":"stdout","time":10.8218269,"data":"configure: using default 'ar' (no cross compilation)\n"}
+,{"stream_name":"stdout","time":10.821831721,"data":"configure: no 'tissat' binary generated (without '--test')\n"}
+,{"stream_name":"stdout","time":10.821850178,"data":"configure: no 'libkissat.so' shared library generated (without '-shared')\n"}
+,{"stream_name":"stdout","time":10.821855129,"data":"configure: no 'kitten' binary generated (without '--kitten')\n"}
+,{"stream_name":"stdout","time":10.825322366,"data":"configure: linking src/makefile\n"}
+,{"stream_name":"stdout","time":10.837131627,"data":"make -C \"/tmp/kissat/build\"\n"}
+,{"stream_name":"stdout","time":10.844574746,"data":"make[1]: Entering directory '/tmp/kissat/build'\n"}
+,{"stream_name":"stdout","time":10.844611463,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/allocate.c\n"}
+,{"stream_name":"stdout","time":10.845322187,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/analyze.c\n"}
+,{"stream_name":"stdout","time":10.846373376,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/ands.c\n"}
+,{"stream_name":"stdout","time":10.847435587,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/arena.c\n"}
+,{"stream_name":"stdout","time":11.351338702,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/assign.c\n"}
+,{"stream_name":"stdout","time":11.355866685,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/averages.c\n"}
+,{"stream_name":"stdout","time":11.367691145,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/backbone.c\n"}
+,{"stream_name":"stdout","time":11.545845364,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/backtrack.c\n"}
+,{"stream_name":"stdout","time":11.652553951,"data":"../scripts/generate-build-header.sh \u003e build.h\n"}
+,{"stream_name":"stdout","time":11.728910759,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/bump.c\n"}
+,{"stream_name":"stdout","time":11.78697747,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/check.c\n"}
+,{"stream_name":"stdout","time":11.835666924,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/classify.c\n"}
+,{"stream_name":"stdout","time":11.999923853,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/clause.c\n"}
+,{"stream_name":"stdout","time":12.068882182,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/collect.c\n"}
+,{"stream_name":"stdout","time":12.186900344,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/colors.c\n"}
+,{"stream_name":"stdout","time":12.307861918,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/compact.c\n"}
+,{"stream_name":"stdout","time":12.474110647,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/config.c\n"}
+,{"stream_name":"stdout","time":12.562239812,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/congruence.c\n"}
+,{"stream_name":"stdout","time":12.611057695,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/decide.c\n"}
+,{"stream_name":"stdout","time":12.776374772,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/deduce.c\n"}
+,{"stream_name":"stdout","time":12.882511022,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/definition.c\n"}
+,{"stream_name":"stdout","time":13.060090335,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/dense.c\n"}
+,{"stream_name":"stdout","time":13.129294571,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/dump.c\n"}
+,{"stream_name":"stdout","time":13.153526121,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/eliminate.c\n"}
+,{"stream_name":"stdout","time":13.168388661,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/equivalences.c\n"}
+,{"stream_name":"stdout","time":13.312949303,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/error.c\n"}
+,{"stream_name":"stdout","time":13.408318705,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/extend.c\n"}
+,{"stream_name":"stdout","time":13.469030997,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/factor.c\n"}
+,{"stream_name":"stdout","time":13.582084389,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/fastel.c\n"}
+,{"stream_name":"stdout","time":14.549965495,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/file.c\n"}
+,{"stream_name":"stdout","time":14.689327312,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/flags.c\n"}
+,{"stream_name":"stdout","time":14.808263803,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/format.c\n"}
+,{"stream_name":"stdout","time":15.024261641,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/forward.c\n"}
+,{"stream_name":"stdout","time":15.131229392,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/gates.c\n"}
+,{"stream_name":"stdout","time":15.165177825,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/heap.c\n"}
+,{"stream_name":"stdout","time":15.308014558,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/ifthenelse.c\n"}
+,{"stream_name":"stdout","time":15.330788217,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/import.c\n"}
+,{"stream_name":"stdout","time":15.558518377,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/internal.c\n"}
+,{"stream_name":"stdout","time":15.626008614,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/kimits.c\n"}
+,{"stream_name":"stdout","time":15.817123804,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/kitten.c\n"}
+,{"stream_name":"stdout","time":15.925033637,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/krite.c\n"}
+,{"stream_name":"stdout","time":15.97215235,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/learn.c\n"}
+,{"stream_name":"stdout","time":16.143635938,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/logging.c\n"}
+,{"stream_name":"stdout","time":16.169127759,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/lucky.c\n"}
+,{"stream_name":"stdout","time":16.225179355,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/minimize.c\n"}
+,{"stream_name":"stdout","time":16.498020906,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/mode.c\n"}
+,{"stream_name":"stdout","time":16.556303461,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/options.c\n"}
+,{"stream_name":"stdout","time":16.655325741,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/phases.c\n"}
+,{"stream_name":"stdout","time":16.801666925,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/preprocess.c\n"}
+,{"stream_name":"stdout","time":16.929873371,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/print.c\n"}
+,{"stream_name":"stdout","time":16.951384637,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/probe.c\n"}
+,{"stream_name":"stdout","time":17.104645282,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/profile.c\n"}
+,{"stream_name":"stdout","time":17.112811761,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/promote.c\n"}
+,{"stream_name":"stdout","time":17.126322343,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/proof.c\n"}
+,{"stream_name":"stdout","time":17.225001974,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/propbeyond.c\n"}
+,{"stream_name":"stdout","time":17.539259394,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/propdense.c\n"}
+,{"stream_name":"stdout","time":17.697229868,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/propinitially.c\n"}
+,{"stream_name":"stdout","time":17.739841606,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/proprobe.c\n"}
+,{"stream_name":"stdout","time":17.80594141,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/propsearch.c\n"}
+,{"stream_name":"stdout","time":17.920021425,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/queue.c\n"}
+,{"stream_name":"stdout","time":18.05339037,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/reduce.c\n"}
+,{"stream_name":"stdout","time":18.061566134,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/reluctant.c\n"}
+,{"stream_name":"stdout","time":18.093704212,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/reorder.c\n"}
+,{"stream_name":"stdout","time":18.179401259,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/rephase.c\n"}
+,{"stream_name":"stdout","time":18.205471331,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/report.c\n"}
+,{"stream_name":"stdout","time":18.22761285,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/resize.c\n"}
+,{"stream_name":"stdout","time":18.346877604,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/resolve.c\n"}
+,{"stream_name":"stdout","time":18.383089057,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/resources.c\n"}
+,{"stream_name":"stdout","time":18.410325352,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/restart.c\n"}
+,{"stream_name":"stdout","time":18.428352087,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/search.c\n"}
+,{"stream_name":"stdout","time":18.569933237,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/shrink.c\n"}
+,{"stream_name":"stdout","time":18.601851038,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/smooth.c\n"}
+,{"stream_name":"stdout","time":18.707453436,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/sort.c\n"}
+,{"stream_name":"stdout","time":18.721554189,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/statistics.c\n"}
+,{"stream_name":"stdout","time":18.732820957,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/strengthen.c\n"}
+,{"stream_name":"stdout","time":18.744380636,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/substitute.c\n"}
+,{"stream_name":"stdout","time":18.861248019,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/sweep.c\n"}
+,{"stream_name":"stdout","time":18.871352238,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/terminate.c\n"}
+,{"stream_name":"stdout","time":18.971391233,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/tiers.c\n"}
+,{"stream_name":"stdout","time":18.990858892,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/trail.c\n"}
+,{"stream_name":"stdout","time":19.150600396,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/transitive.c\n"}
+,{"stream_name":"stdout","time":19.252483505,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/utilities.c\n"}
+,{"stream_name":"stdout","time":19.32461636,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/vector.c\n"}
+,{"stream_name":"stdout","time":19.566173968,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/vivify.c\n"}
+,{"stream_name":"stdout","time":19.642700918,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/walk.c\n"}
+,{"stream_name":"stdout","time":19.879801541,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/warmup.c\n"}
+,{"stream_name":"stdout","time":19.996460215,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/watch.c\n"}
+,{"stream_name":"stdout","time":20.316395932,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/weaken.c\n"}
+,{"stream_name":"stdout","time":20.37231676,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/main.c\n"}
+,{"stream_name":"stdout","time":20.410308891,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/application.c\n"}
+,{"stream_name":"stdout","time":20.471261577,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/handle.c\n"}
+,{"stream_name":"stdout","time":20.510751482,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/parse.c\n"}
+,{"stream_name":"stdout","time":20.554432057,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -c ../src/witness.c\n"}
+,{"stream_name":"stdout","time":20.720477688,"data":"gcc -W -Wall -O3 -DNDEBUG -DQUIET -I../build -c ../src/build.c\n"}
+,{"stream_name":"stdout","time":21.383800354,"data":"ar rc libkissat.a allocate.o analyze.o ands.o arena.o assign.o averages.o backbone.o backtrack.o build.o bump.o check.o classify.o clause.o collect.o colors.o compact.o config.o congruence.o decide.o deduce.o definition.o dense.o dump.o eliminate.o equivalences.o error.o extend.o factor.o fastel.o file.o flags.o format.o forward.o gates.o heap.o ifthenelse.o import.o internal.o kimits.o kitten.o krite.o learn.o logging.o lucky.o minimize.o mode.o options.o phases.o preprocess.o print.o probe.o profile.o promote.o proof.o propbeyond.o propdense.o propinitially.o proprobe.o propsearch.o queue.o reduce.o reluctant.o reorder.o rephase.o report.o resize.o resolve.o resources.o restart.o search.o shrink.o smooth.o sort.o statistics.o strengthen.o substitute.o sweep.o terminate.o tiers.o trail.o transitive.o utilities.o vector.o vivify.o walk.o warmup.o watch.o weaken.o\n"}
+,{"stream_name":"stdout","time":21.428562377,"data":"gcc -o kissat main.o application.o handle.o parse.o witness.o libkissat.a -lm\n"}
+,{"stream_name":"stdout","time":21.529761206,"data":"make[1]: Leaving directory '/tmp/kissat/build'\n"}
+,{"stream_name":"stderr","time":21.933954434,"data":"/tmp/build_quot.c: In function ‘main’:\n"}
+,{"stream_name":"stderr","time":21.933990113,"data":"/tmp/build_quot.c:146:24: warning: argument 1 range [18446744071562067968, 18446744073709551615] exceeds maximum object size 9223372036854775807 [-Walloc-size-larger-than=]\n"}
+,{"stream_name":"stderr","time":21.933996013,"data":"  146 |     int8_t  *orb_pos = malloc(nv * sizeof(int8_t));\n"}
+,{"stream_name":"stderr","time":21.934000264,"data":"      |                        ^~~~~~~~~~~~~~~~~~~~~~~~~~~\n"}
+,{"stream_name":"stderr","time":21.934924011,"data":"In file included from /tmp/build_quot.c:4:\n"}
+,{"stream_name":"stderr","time":21.934955931,"data":"/usr/include/stdlib.h:672:14: note: in a call to allocation function ‘malloc’ declared here\n"}
+,{"stream_name":"stderr","time":21.935048717,"data":"  672 | extern void *malloc (size_t __size) __THROW __attribute_malloc__\n"}
+,{"stream_name":"stderr","time":21.935054149,"data":"      |              ^~~~~~\n"}
+,{"stream_name":"stderr","time":41037.258685752,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":41037.258887083,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":41037.631330808,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":41037.631368475,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":41039.630536063,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":41040.989783871,"data":"[NbConvertApp] Writing 301466 bytes to __results__.html\n"}
+]
