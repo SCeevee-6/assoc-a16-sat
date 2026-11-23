@@ -1,0 +1,14 @@
+{
+  "k_rot": 8,
+  "shift": 1,
+  "seeds": [
+    500001,
+    500002,
+    500003,
+    500004
+  ],
+  "winner_seed": null,
+  "status": "s UNKNOWN",
+  "lift_verified": false,
+  "elapsed_sec": 41029.81
+}
