@@ -1,292 +1,95 @@
-import os, json, subprocess, time
+import json, os, pathlib, subprocess, time
 import numpy as np
 
+WORKER_ID = 4
+SEED_BASE = 202611245000
+MAX_SECONDS = 41000
+NWORKERS = 4
+OUT = pathlib.Path("/kaggle/working")
+OUT.mkdir(parents=True, exist_ok=True)
+
+GENERATOR = '#include <stdio.h>\n#include <stdint.h>\n#include <stdlib.h>\n#include <string.h>\n\nstatic int g_bits;\nstatic uint32_t *g_codes;\nstatic int g_count;\n\nstatic void gen_dfs(int pos, int open_n, int int_left, uint32_t cur) {\n    if (pos == g_bits) { g_codes[g_count++] = cur; return; }\n    if (int_left > 0)\n        gen_dfs(pos + 1, open_n + 1, int_left - 1, cur | (1U << (g_bits - 1 - pos)));\n    if (open_n > 1 || (open_n == 1 && int_left == 0))\n        gen_dfs(pos + 1, open_n - 1, int_left, cur);\n}\n\nstatic int cmp_u32(const void *a, const void *b) {\n    uint32_t x = *(const uint32_t *)a, y = *(const uint32_t *)b;\n    return (x > y) - (x < y);\n}\n\nstatic inline int bsearch_u32(const uint32_t *arr, int n, uint32_t tgt) {\n    int lo = 0, hi = n - 1;\n    while (lo <= hi) {\n        int mid = lo + ((hi - lo) >> 1);\n        uint32_t v = arr[mid];\n        if (v == tgt) return mid;\n        if (v < tgt) lo = mid + 1; else hi = mid - 1;\n    }\n    return -1;\n}\n\nstatic inline int sub_len(uint32_t code, int bits, int pos) {\n    int bal = 0;\n    for (int p = pos; p < bits; p++) {\n        bal += ((code >> (bits - 1 - p)) & 1U) ? 1 : -1;\n        if (bal < 0) return p - pos + 1;\n    }\n    return bits + 1 - pos;\n}\n\nint main(int argc, char **argv) {\n    int n = (argc > 1) ? atoi(argv[1]) : 16;\n    const char *cnf_path = (argc > 2) ? argv[2] : "A16_sym.cnf";\n    int K = n - 2;\n    g_bits = 2 * K;\n    g_codes = malloc(3000000 * sizeof(uint32_t));\n    g_count = 0;\n    gen_dfs(0, 1, K, 0U);\n    qsort(g_codes, g_count, sizeof(uint32_t), cmp_u32);\n\n    int nv = g_count;\n    int32_t *u = malloc(20000000 * sizeof(int32_t));\n    int32_t *v = malloc(20000000 * sizeof(int32_t));\n    int64_t ne = 0;\n    int bits = g_bits;\n\n    for (int idx = 0; idx < nv; idx++) {\n        uint32_t code = g_codes[idx];\n        for (int p = 0; p < bits; p++) {\n            if (((code >> (bits - 1 - p)) & 1U) == 0U) continue;\n            int lp = p + 1;\n            int ll = sub_len(code, bits, lp);\n            int rp = lp + ll;\n\n            if (lp < bits && ((code >> (bits - 1 - lp)) & 1U) == 1U) {\n                int lenA = sub_len(code, bits, lp + 1);\n                uint32_t nxt = code;\n                for (int i = 0; i < lenA; i++) {\n                    uint32_t b = (code >> (bits - 1 - (lp + 1 + i))) & 1U;\n                    int sh = bits - 1 - (lp + i);\n                    if (b) nxt |= (1U << sh); else nxt &= ~(1U << sh);\n                }\n                nxt |= (1U << (bits - 1 - (lp + lenA)));\n                int nb = bsearch_u32(g_codes, nv, nxt);\n                if (idx < nb) { u[ne] = idx; v[ne] = nb; ne++; }\n            }\n            if (rp < bits && ((code >> (bits - 1 - rp)) & 1U) == 1U) {\n                int lenA = ll;\n                uint32_t nxt = code | (1U << (bits - 1 - lp));\n                for (int i = 0; i < lenA; i++) {\n                    uint32_t b = (code >> (bits - 1 - (lp + i))) & 1U;\n                    int sh = bits - 1 - (lp + 1 + i);\n                    if (b) nxt |= (1U << sh); else nxt &= ~(1U << sh);\n                }\n                int nb = bsearch_u32(g_codes, nv, nxt);\n                if (idx < nb) { u[ne] = idx; v[ne] = nb; ne++; }\n            }\n        }\n    }\n    printf("Built A_%d: V=%d, E=%lld\\n", n, nv, (long long)ne);\n\n    FILE *fg = fopen("A16_graph.bin", "wb");\n    fwrite(&nv, sizeof(int32_t), 1, fg);\n    fwrite(&ne, sizeof(int64_t), 1, fg);\n    fwrite(g_codes, sizeof(uint32_t), nv, fg);\n    fwrite(u, sizeof(int32_t), ne, fg);\n    fwrite(v, sizeof(int32_t), ne, fg);\n    fclose(fg);\n\n    /* Break all 24 color symmetries via path v0 - v1 - v2 */\n    int v0 = 0, v1 = v, v2 = -1;\n    for (int64_t e = 0; e < ne; e++) {\n        if (u[e] == v1 && v[e] != v0) { v2 = v[e]; break; }\n        if (v[e] == v1 && u[e] != v0) { v2 = u[e]; break; }\n    }\n\n    FILE *fp = fopen(cnf_path, "w");\n    setvbuf(fp, NULL, _IOFBF, 16 * 1024 * 1024);\n    int64_t nvars = (int64_t)nv * 4;\n    int64_t ncls = (int64_t)nv * 7 + ne * 4 + 3;\n    fprintf(fp, "p cnf %lld %lld\\n", (long long)nvars, (long long)ncls);\n\n    for (int i = 0; i < nv; i++) {\n        int b = 4 * i;\n        fprintf(fp, "%d %d %d %d 0\\n-%d -%d 0\\n-%d -%d 0\\n-%d -%d 0\\n-%d -%d 0\\n-%d -%d 0\\n-%d -%d 0\\n",\n                b+1, b+2, b+3, b+4,\n                b+1, b+2, b+1, b+3, b+1, b+4,\n                b+2, b+3, b+2, b+4, b+3, b+4);\n    }\n    fprintf(fp, "%d 0\\n%d 0\\n-%d 0\\n", 4*v0+1, 4*v1+2, 4*v2+4);\n\n    for (int64_t e = 0; e < ne; e++) {\n        int a = 4 * u[e], b = 4 * v[e];\n        fprintf(fp, "-%d -%d 0\\n-%d -%d 0\\n-%d -%d 0\\n-%d -%d 0\\n",\n                a+1, b+1, a+2, b+2, a+3, b+3, a+4, b+4);\n    }\n    fclose(fp);\n    printf("Wrote %s (%lld vars, %lld clauses)\\n", cnf_path, (long long)nvars, (long long)ncls);\n    return 0;\n}\n'
+SOLVER = '/*\n * Direct 4-color stochastic local search for A16_graph.bin.\n * C11, no external libraries. Input format (little-endian host assumed):\n *   int32 nv, int64 ne, uint32 codes[nv], int32 u[ne], int32 v[ne]\n * Output is exactly nv bytes, one color (0..3) per vertex.\n */\n#define _POSIX_C_SOURCE 200809L\n#include <errno.h>\n#include <inttypes.h>\n#include <stdint.h>\n#include <stdio.h>\n#include <stdlib.h>\n#include <string.h>\n#include <time.h>\n\nstatic uint64_t rng_state;\nstatic uint64_t rng(void){ uint64_t x=rng_state; x^=x>>12; x^=x<<25; x^=x>>27; rng_state=x; return x*UINT64_C(2685821657736338717); }\nstatic uint32_t pick(uint32_t n){ return n ? (uint32_t)(rng()%n) : 0; }\nstatic void *xmalloc(size_t n){ void *p=malloc(n); if(!p){fprintf(stderr,"allocation failed (%zu bytes)\\n",n); exit(2);} return p; }\nstatic int read_exact(FILE*f,void*p,size_t z){return fread(p,1,z,f)==z;}\nstatic void usage(const char*p){fprintf(stderr,"Usage: %s GRAPH.bin --seed N [--max-flips N] [--restart-flips N] [--out FILE]\\n",p);}\n\nint main(int argc,char**argv){\n if(argc<2){usage(argv[0]);return 2;}\n const char *graph=argv[1], *out="a16_solution.colors";\n uint64_t seed=1, maxflips=UINT64_MAX, restartflips=10000000; double maxseconds=41000.0; int have_seed=0;\n for(int i=2;i<argc;i++){\n  if(!strcmp(argv[i],"--seed")&&i+1<argc){seed=strtoull(argv[++i],NULL,10);have_seed=1;}\n  else if(!strcmp(argv[i],"--max-flips")&&i+1<argc)maxflips=strtoull(argv[++i],NULL,10);\\n  else if(!strcmp(argv[i],"--max-seconds")&&i+1<argc)maxseconds=strtod(argv[++i],NULL);\n  else if(!strcmp(argv[i],"--restart-flips")&&i+1<argc)restartflips=strtoull(argv[++i],NULL,10);\n  else if(!strcmp(argv[i],"--out")&&i+1<argc)out=argv[++i]; else {usage(argv[0]);return 2;}\n }\n if(!have_seed){fprintf(stderr,"--seed is required\\n");return 2;} rng_state=seed?seed:UINT64_C(0x9e3779b97f4a7c15);\n FILE*f=fopen(graph,"rb"); if(!f){perror(graph);return 2;}\n int32_t nv32; int64_t ne64;\n if(!read_exact(f,&nv32,4)||!read_exact(f,&ne64,8)||nv32<=0||ne64<0){fprintf(stderr,"bad graph header\\n");return 2;}\n uint32_t nv=(uint32_t)nv32; uint64_t ne=(uint64_t)ne64;\n if(ne>SIZE_MAX/(2*sizeof(uint32_t))){fprintf(stderr,"graph too large\\n");return 2;}\n if(fseeko(f,(off_t)((uint64_t)nv*4),SEEK_CUR)){fprintf(stderr,"bad codes section\\n");return 2;}\n uint32_t *eu=xmalloc((size_t)ne*4), *ev=xmalloc((size_t)ne*4);\n for(uint64_t e=0;e<ne;e++){int32_t a;if(!read_exact(f,&a,4)){fprintf(stderr,"truncated u array at %"PRIu64"\\n",e);return 2;} if(a<0||(uint32_t)a>=nv){fprintf(stderr,"invalid u endpoint at %"PRIu64"\\n",e);return 2;}eu[e]=(uint32_t)a;}\n for(uint64_t e=0;e<ne;e++){int32_t b;if(!read_exact(f,&b,4)){fprintf(stderr,"truncated v array at %"PRIu64"\\n",e);return 2;} if(b<0||(uint32_t)b>=nv||eu[e]==(uint32_t)b){fprintf(stderr,"invalid v endpoint at %"PRIu64"\\n",e);return 2;}ev[e]=(uint32_t)b;}\n fclose(f);\n if(ne>UINT32_MAX/2){fprintf(stderr,"too many adjacency entries\\n");return 2;}\n uint32_t *deg=calloc(nv,sizeof(*deg)); if(!deg){perror("calloc");return 2;}\n for(uint64_t e=0;e<ne;e++){deg[eu[e]]++;deg[ev[e]]++;}\n uint64_t *off=xmalloc((size_t)(nv+1)*8); off[0]=0;for(uint32_t v=0;v<nv;v++)off[v+1]=off[v]+deg[v];\n uint32_t *adj=xmalloc((size_t)(2*ne)*4);uint64_t *cur=xmalloc((size_t)nv*8);memcpy(cur,off,(size_t)nv*8);\n for(uint64_t e=0;e<ne;e++){adj[cur[eu[e]]++]=ev[e];adj[cur[ev[e]]++]=eu[e];}free(cur);\n uint8_t *col=xmalloc(nv); uint64_t *tabu=xmalloc((size_t)nv*4*sizeof(uint64_t)); memset(tabu,0,(size_t)nv*4*sizeof(uint64_t));\n uint32_t *bad=xmalloc((size_t)nv*4),*pos=xmalloc((size_t)nv*4),*conf=xmalloc((size_t)nv*4);uint32_t nbad=0;\n for(uint32_t v=0;v<nv;v++){col[v]=(uint8_t)pick(4);pos[v]=UINT32_MAX;}\n uint64_t conflicts=0;\n for(uint32_t v=0;v<nv;v++){uint32_t c=0;for(uint64_t j=off[v];j<off[v+1];j++)c+=(col[adj[j]]==col[v]);conf[v]=c;if(c){bad[nbad]=v;pos[v]=nbad++;}}\n for(uint64_t e=0;e<ne;e++)conflicts+=(col[eu[e]]==col[ev[e]]);\n fprintf(stderr,"graph nv=%u ne=%"PRIu64" seed=%"PRIu64" start_conflicts=%"PRIu64"\\n",nv,ne,seed,conflicts);\n uint64_t steps=0, since_restart=0, best=conflicts; uint32_t stale=0;\n while(conflicts && steps<maxflips){\n  if(nbad==0){fprintf(stderr,"internal bad-list inconsistency\\n");return 3;}\n  uint32_t v=bad[pick(nbad)], old=col[v], counts[4]={0,0,0,0};\n  for(uint64_t j=off[v];j<off[v+1];j++)counts[col[adj[j]]]++;\n  uint32_t bestc=UINT32_MAX, choices[4], nc=0;\n  for(uint32_t c=0;c<4;c++)if(c!=old && (tabu[4*(size_t)v+c] <= steps || counts[c]==0)){\n    if(counts[c]<bestc){bestc=counts[c];nc=0;} if(counts[c]==bestc)choices[nc++]=c;\n  }\n  if(!nc){for(uint32_t c=0;c<4;c++)if(c!=old){if(counts[c]<bestc){bestc=counts[c];nc=0;}if(counts[c]==bestc)choices[nc++]=c;}}\n  uint32_t nw=choices[pick(nc)];\n  /* Tabu is stored modulo 256; short tenure keeps the byte representation exact. */\n  tabu[4*(size_t)v+old]=steps+5+pick(8);\n  col[v]=(uint8_t)nw;\n  for(uint64_t j=off[v];j<off[v+1];j++){\n   uint32_t u=adj[j], before=conf[u];\n   if(col[u]==old) conf[u]--;\n   if(col[u]==nw) conf[u]++;\n   if(!before&&conf[u]){pos[u]=nbad;bad[nbad++]=u;} else if(before&&!conf[u]){uint32_t p=pos[u],last=bad[--nbad];bad[p]=last;pos[last]=p;pos[u]=UINT32_MAX;}\n  }\n  uint32_t cv=0;for(uint64_t j=off[v];j<off[v+1];j++)cv+=(col[adj[j]]==nw);conf[v]=cv;\n  if(cv==0){uint32_t p=pos[v],last=bad[--nbad];bad[p]=last;pos[last]=p;pos[v]=UINT32_MAX;}\n  else { /* v stays conflicted; its list position is unchanged */ }\n  /* Update total conflicts from the incident edges whose endpoint is v. */\n  conflicts = conflicts - counts[old] + counts[nw];\n  steps++; since_restart++;\n  if(steps%1000000==0)fprintf(stderr,"step=%"PRIu64" conflicts=%"PRIu64" best=%"PRIu64"\\n",steps,conflicts,best);\n  if(conflicts<best){best=conflicts;stale=0;}else stale++;\n  if(conflicts==0)break;\n  if(restartflips&&since_restart>=restartflips){for(uint32_t q=0;q<nv;q++){col[q]=(uint8_t)pick(4);tabu[4*(size_t)q]=tabu[4*(size_t)q+1]=tabu[4*(size_t)q+2]=tabu[4*(size_t)q+3]=0;}\n    nbad=0;memset(pos,0xff,(size_t)nv*4);conflicts=0;\n    for(uint32_t q=0;q<nv;q++){uint32_t c=0;for(uint64_t j=off[q];j<off[q+1];j++)c+=(col[adj[j]]==col[q]);conf[q]=c;if(c){pos[q]=nbad;bad[nbad++]=q;}conflicts+=c;}\n    conflicts/=2;since_restart=0;if(conflicts<best)best=conflicts;fprintf(stderr,"restart step=%"PRIu64" conflicts=%"PRIu64"\\n",steps,conflicts);\n  }\n }\n if(conflicts==0){for(uint64_t e=0;e<ne;e++)if(col[eu[e]]==col[ev[e]]){fprintf(stderr,"verification failed at edge %"PRIu64"\\n",e);return 3;}FILE*g=fopen(out,"wb");if(!g){perror(out);return 2;}if(fwrite(col,1,nv,g)!=nv){fprintf(stderr,"write failed\\n");return 2;}fclose(g);printf("SAT seed=%"PRIu64" steps=%"PRIu64" output=%s\\n",seed,steps,out);return 0;}\n fprintf(stderr,"UNKNOWN seed=%"PRIu64" steps=%"PRIu64" conflicts=%"PRIu64" best=%"PRIu64"\\n",seed,steps,conflicts,best);return 1;\n}\n'
+
+def write(path, data):
+    pathlib.Path(path).write_text(data)
+
 t0 = time.time()
-K_ROT = 4
-SHIFT = 2
-SEEDS = [940001, 940002, 940003, 940004]
+write("/tmp/build_a16.c", GENERATOR)
+write("/tmp/a16_sls.c", SOLVER)
+subprocess.run(["gcc", "-O3", "-DNDEBUG", "-std=c11", "/tmp/build_a16.c", "-o", "/tmp/build_a16"], check=True)
+subprocess.run(["gcc", "-O3", "-DNDEBUG", "-std=c11", "/tmp/a16_sls.c", "-o", "/tmp/a16_sls"], check=True)
+subprocess.run(["/tmp/build_a16", "16", "/tmp/unused.cnf"], check=True)
+graph = pathlib.Path("A16_graph.bin")
+if not graph.exists():
+    raise RuntimeError("graph generator did not create A16_graph.bin")
 
-subprocess.run(["apt-get", "update", "-qq"], check=True)
-subprocess.run(["apt-get", "install", "-y", "-qq", "gcc", "g++", "make", "git"], check=True)
-
-if not os.path.exists("/tmp/kissat/build/kissat"):
-    subprocess.run(["git", "clone", "--depth=1", "https://github.com/arminbiere/kissat.git", "/tmp/kissat"], check=True)
-    subprocess.run(["./configure", "--quiet"], cwd="/tmp/kissat", check=True)
-    subprocess.run(["make", "-j4"], cwd="/tmp/kissat", check=True)
-
-with open("/tmp/build_quot.c", "w") as f:
-    f.write(r"""
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <string.h>
-
-static int g_bits, g_count;
-static uint32_t *g_codes;
-
-static void gen_dfs(int pos, int open_n, int int_left, uint32_t cur) {
-    if (pos == g_bits) { g_codes[g_count++] = cur; return; }
-    if (int_left > 0)
-        gen_dfs(pos + 1, open_n + 1, int_left - 1, cur | (1U << (g_bits - 1 - pos)));
-    if (open_n > 1 || (open_n == 1 && int_left == 0))
-        gen_dfs(pos + 1, open_n - 1, int_left, cur);
-}
-static int cmp_u32(const void *a, const void *b) {
-    uint32_t x = *(const uint32_t *)a, y = *(const uint32_t *)b;
-    return (x > y) - (x < y);
-}
-static int cmp_u64(const void *a, const void *b) {
-    uint64_t x = *(const uint64_t *)a, y = *(const uint64_t *)b;
-    return (x > y) - (x < y);
-}
-static inline int bsearch_u32(const uint32_t *arr, int n, uint32_t tgt) {
-    int lo = 0, hi = n - 1;
-    while (lo <= hi) {
-        int mid = lo + ((hi - lo) >> 1);
-        if (arr[mid] == tgt) return mid;
-        if (arr[mid] < tgt) lo = mid + 1; else hi = mid - 1;
-    }
-    return -1;
-}
-static inline int sub_len(uint32_t code, int bits, int pos) {
-    int bal = 0;
-    for (int p = pos; p < bits; p++) {
-        bal += ((code >> (bits - 1 - p)) & 1U) ? 1 : -1;
-        if (bal < 0) return p - pos + 1;
-    }
-    return bits + 1 - pos;
-}
-static void code_to_diags(uint32_t code, int n_gon, int diags[16][2]) {
-    int node_type[64], node_l[64], node_r[64];
-    int nsp = 0, leaf = 0, d_idx = 0, bits = 2 * (n_gon - 2);
-    for (int p = 0; p < bits; p++) {
-        int bit = (int)((code >> (bits - 1 - p)) & 1U);
-        node_type[nsp] = bit;
-        if (bit == 0) { node_l[nsp] = leaf; node_r[nsp] = leaf + 1; leaf++; }
-        nsp++;
-        while (nsp >= 3 && node_type[nsp - 3] == 1 && node_type[nsp - 2] == 0 && node_type[nsp - 1] == 0) {
-            int l = node_l[nsp - 2], r = node_r[nsp - 1];
-            if (!(l == 0 && r == n_gon - 1)) { diags[d_idx][0] = l; diags[d_idx][1] = r; d_idx++; }
-            nsp -= 2; node_type[nsp - 1] = 0; node_l[nsp - 1] = l; node_r[nsp - 1] = r;
-        }
-    }
-    node_type[nsp] = 0; node_l[nsp] = leaf; node_r[nsp] = leaf + 1; nsp++;
-    while (nsp >= 3 && node_type[nsp - 3] == 1 && node_type[nsp - 2] == 0 && node_type[nsp - 1] == 0) {
-        int l = node_l[nsp - 2], r = node_r[nsp - 1];
-        if (!(l == 0 && r == n_gon - 1)) { diags[d_idx][0] = l; diags[d_idx][1] = r; d_idx++; }
-        nsp -= 2; node_type[nsp - 1] = 0; node_l[nsp - 1] = l; node_r[nsp - 1] = r;
-    }
-}
-static uint32_t diags_to_code(int n_gon, int diags[16][2]) {
-    uint8_t adj[20][20];
-    memset(adj, 0, sizeof(adj));
-    for (int i = 0; i < n_gon - 3; i++) {
-        int a = diags[i][0], b = diags[i][1];
-        adj[a][b] = adj[b][a] = 1;
-    }
-    uint32_t code = 0;
-    int pos = 0, bits = 2 * (n_gon - 2), sl[64], sr[64], sp = 0;
-    sl[sp] = 0; sr[sp] = n_gon - 1; sp++;
-    while (sp > 0) {
-        sp--;
-        int l = sl[sp], r = sr[sp];
-        if (r - l == 1) { if (pos < bits) pos++; }
-        else {
-            int mid = -1;
-            for (int k = l + 1; k < r; k++) {
-                if (((k - l == 1) || adj[l][k]) && ((r - k == 1) || adj[k][r])) { mid = k; break; }
-            }
-            code |= (1U << (bits - 1 - pos)); pos++;
-            sl[sp] = mid; sr[sp] = r; sp++;
-            sl[sp] = l;   sr[sp] = mid; sp++;
-        }
-    }
-    return code;
-}
-
-int main(int argc, char **argv) {
-    int k_rot = atoi(argv[1]), shift = atoi(argv[2]) & 3, step = 16 / k_rot;
-    g_bits = 28;
-    g_codes = malloc(3000000 * sizeof(uint32_t));
-    g_count = 0;
-    gen_dfs(0, 1, 14, 0U);
-    qsort(g_codes, g_count, sizeof(uint32_t), cmp_u32);
-    int nv = g_count;
-
-    int32_t *eu = malloc(20000000 * sizeof(int32_t));
-    int32_t *ev = malloc(20000000 * sizeof(int32_t));
-    int64_t ne = 0;
-    for (int idx = 0; idx < nv; idx++) {
-        uint32_t code = g_codes[idx];
-        for (int p = 0; p < 28; p++) {
-            if (((code >> (27 - p)) & 1U) == 0U) continue;
-            int lp = p + 1, ll = sub_len(code, 28, lp), rp = lp + ll;
-            if (lp < 28 && ((code >> (27 - lp)) & 1U) == 1U) {
-                int lenA = sub_len(code, 28, lp + 1);
-                uint32_t nxt = code;
-                for (int i = 0; i < lenA; i++) {
-                    uint32_t b = (code >> (27 - (lp + 1 + i))) & 1U;
-                    int sh = 27 - (lp + i);
-                    if (b) nxt |= (1U << sh); else nxt &= ~(1U << sh);
-                }
-                nxt |= (1U << (27 - (lp + lenA)));
-                int nb = bsearch_u32(g_codes, nv, nxt);
-                if (idx < nb) { eu[ne] = idx; ev[ne] = nb; ne++; }
-            }
-            if (rp < 28 && ((code >> (27 - rp)) & 1U) == 1U) {
-                int lenA = ll;
-                uint32_t nxt = code | (1U << (27 - lp));
-                for (int i = 0; i < lenA; i++) {
-                    uint32_t b = (code >> (27 - (lp + i))) & 1U;
-                    int sh = 27 - (lp + 1 + i);
-                    if (b) nxt |= (1U << sh); else nxt &= ~(1U << sh);
-                }
-                int nb = bsearch_u32(g_codes, nv, nxt);
-                if (idx < nb) { eu[ne] = idx; ev[ne] = nb; ne++; }
-            }
-        }
-    }
-
-    int32_t *rho = malloc(nv * sizeof(int32_t));
-    for (int i = 0; i < nv; i++) {
-        int diags[16][2];
-        code_to_diags(g_codes[i], 16, diags);
-        for (int d = 0; d < 13; d++) {
-            int a = (diags[d][0] + step) & 15, b = (diags[d][1] + step) & 15;
-            if (a > b) { int t = a; a = b; b = t; }
-            diags[d][0] = a; diags[d][1] = b;
-        }
-        rho[i] = bsearch_u32(g_codes, nv, diags_to_code(16, diags));
-    }
-
-    int32_t *orb_id = malloc(nv * sizeof(int32_t));
-    int8_t  *orb_pos = malloc(nv * sizeof(int8_t));
-    memset(orb_id, -1, nv * sizeof(int32_t));
-    int num_orbs = 0;
-    for (int i = 0; i < nv; i++) {
-        if (orb_id[i] != -1) continue;
-        int cur = i, len = 0;
-        while (orb_id[cur] == -1) {
-            orb_id[cur] = num_orbs; orb_pos[cur] = (int8_t)len; len++; cur = rho[cur];
-        }
-        num_orbs++;
-    }
-
-    if (argc >= 5 && strcmp(argv[3], "lift") == 0) {
-        int8_t *orb_col = malloc(num_orbs);
-        memset(orb_col, -1, num_orbs);
-        FILE *fl = fopen(argv[4], "r");
-        char tok[64]; int sat = 0;
-        while (fscanf(fl, "%63s", tok) == 1) {
-            if (strcmp(tok, "SATISFIABLE") == 0) sat = 1;
-            else {
-                long lit = strtol(tok, NULL, 10);
-                if (lit > 0) {
-                    int idx = (int)(lit - 1), o = idx / 4, c = idx & 3;
-                    if (o >= 0 && o < num_orbs && orb_col[o] == -1) orb_col[o] = (int8_t)c;
-                }
-            }
-        }
-        fclose(fl);
-        if (!sat) return 2;
-        int8_t *vcol = malloc(nv);
-        for (int i = 0; i < nv; i++) vcol[i] = (int8_t)((orb_col[orb_id[i]] + orb_pos[i] * shift) & 3);
-        for (int64_t e = 0; e < ne; e++) {
-            if (vcol[eu[e]] == vcol[ev[e]]) return 3;
-        }
-        FILE *fo = fopen("/kaggle/working/A16_4coloring_verified.bin", "wb");
-        fwrite(vcol, 1, nv, fo);
-        fclose(fo);
-        return 0;
-    }
-
-    uint64_t *qedges = malloc(ne * sizeof(uint64_t));
-    int64_t qcount = 0;
-    for (int64_t e = 0; e < ne; e++) {
-        int u = eu[e], v = ev[e], oa = orb_id[u], ob = orb_id[v];
-        int delta = (((orb_pos[u] - orb_pos[v]) * shift) % 4 + 4) % 4;
-        if (oa == ob) continue;
-        if (oa > ob) { int t = oa; oa = ob; ob = t; delta = (4 - delta) & 3; }
-        qedges[qcount++] = ((uint64_t)oa << 24) | ((uint64_t)ob << 2) | (uint64_t)delta;
-    }
-    qsort(qedges, qcount, sizeof(uint64_t), cmp_u64);
-    int64_t uq = 0;
-    for (int64_t i = 0; i < qcount; i++) {
-        if (i == 0 || qedges[i] != qedges[i - 1]) qedges[uq++] = qedges[i];
-    }
-
-    FILE *fc = fopen("/tmp/quot.cnf", "w");
-    setvbuf(fc, NULL, _IOFBF, 16 * 1024 * 1024);
-    fprintf(fc, "p cnf %lld %lld\n", (long long)num_orbs * 4, (long long)num_orbs + uq * 4 + 1);
-    for (int i = 0; i < num_orbs; i++) {
-        int b = 4 * i;
-        fprintf(fc, "%d %d %d %d 0\n", b + 1, b + 2, b + 3, b + 4);
-    }
-    fprintf(fc, "1 0\n");
-    for (int64_t i = 0; i < uq; i++) {
-        int oa = (int)(qedges[i] >> 24), ob = (int)((qedges[i] >> 2) & 0x3FFFFF), delta = (int)(qedges[i] & 3);
-        for (int c = 0; c < 4; c++) {
-            fprintf(fc, "-%d -%d 0\n", 4 * oa + c + 1, 4 * ob + ((c + delta) & 3) + 1);
-        }
-    }
-    fclose(fc);
-    return 0;
-}
-""")
-
-subprocess.run(["gcc", "-O3", "/tmp/build_quot.c", "-o", "/tmp/build_quot"], check=True)
-subprocess.run(["/tmp/build_quot", str(K_ROT), str(SHIFT)], check=True)
-
+# One process per available CPU. Individual solver processes share the graph
+# but use distinct deterministic seeds and stop at the same wall-clock deadline.
 procs = []
-for s in SEEDS:
-    logp = f"/tmp/kissat_{s}.log"
-    lf = open(logp, "w")
+logs = []
+for i in range(NWORKERS):
+    seed = SEED_BASE + i
+    raw = OUT / f"A16_colors_seed_{seed}.bin"
+    log = open(OUT / f"A16_worker_{i}.log", "w")
     p = subprocess.Popen(
-        ["/tmp/kissat/build/kissat", f"--seed={s}", "--walkinitially", "--time=41000", "/tmp/quot.cnf"],
-        stdout=lf, stderr=subprocess.STDOUT
+        ["/tmp/a16_sls", str(graph), "--seed", str(seed),
+         "--max-seconds", str(MAX_SECONDS), "--out", str(raw)],
+        stdout=log, stderr=subprocess.STDOUT
     )
-    procs.append((s, p, lf, logp))
+    procs.append((seed, p, raw, log))
+    logs.append(log)
 
-winner_seed = None
-final_status = "UNKNOWN"
-while procs:
+winner = None
+while procs and time.time() - t0 < MAX_SECONDS:
     for item in list(procs):
-        s, p, lf, logp = item
+        seed, p, raw, log = item
         if p.poll() is not None:
-            lf.close()
+            log.flush()
+            if p.returncode == 0 and raw.exists():
+                winner = (seed, raw)
+                break
             procs.remove(item)
-            with open(logp) as rf:
-                for line in rf:
-                    if line.startswith("s "):
-                        st = line.strip()
-                        if "SATISFIABLE" in st and "UNSATISFIABLE" not in st:
-                            winner_seed = s
-                            final_status = st
-                            for _, op, olf, _ in procs:
-                                op.terminate()
-                                olf.close()
-                            procs.clear()
-                        elif final_status == "UNKNOWN":
-                            final_status = st
-                        break
-    if procs:
-        time.sleep(5)
+    if winner:
+        break
+    time.sleep(2)
 
-lift_verified = False
-if winner_seed is not None:
-    rc = subprocess.run(["/tmp/build_quot", str(K_ROT), str(SHIFT), "lift", f"/tmp/kissat_{winner_seed}.log"]).returncode
-    if rc == 0:
-        lift_verified = True
-        arr = np.fromfile("/kaggle/working/A16_4coloring_verified.bin", dtype=np.int8)
-        np.savez_compressed("/kaggle/working/A16_4coloring_verified.npz", colors=arr)
+for seed, p, raw, log in procs:
+    if p.poll() is None:
+        p.terminate()
+for seed, p, raw, log in procs:
+    try:
+        p.wait(timeout=10)
+    except subprocess.TimeoutExpired:
+        p.kill()
+    log.close()
+for log in logs:
+    if not log.closed:
+        log.close()
 
-with open("/kaggle/working/A16_kaggle_result.json", "w") as jf:
+status = "UNKNOWN"
+verified = False
+if winner:
+    seed, raw = winner
+    colors = np.fromfile(raw, dtype=np.uint8)
+    with open(graph, "rb") as f:
+        nv = int(np.fromfile(f, dtype=np.int32, count=1)[0])
+        ne = int(np.fromfile(f, dtype=np.int64, count=1)[0])
+        codes = np.fromfile(f, dtype=np.uint32, count=nv)
+        u = np.fromfile(f, dtype=np.int32, count=ne)
+        v = np.fromfile(f, dtype=np.int32, count=ne)
+    verified = bool(len(colors) == nv and np.all(colors[u] != colors[v]))
+    if verified:
+        np.savez_compressed(OUT / "A16_4coloring_verified.npz", codes=codes, colors=colors)
+        status = "SAT_VERIFIED"
+    else:
+        status = "ERROR_VERIFICATION_FAILED"
+
+with open(OUT / "A16_kaggle_result.json", "w") as f:
     json.dump({
-        "k_rot": K_ROT,
-        "shift": SHIFT,
-        "seeds": SEEDS,
-        "winner_seed": winner_seed,
-        "status": final_status,
-        "lift_verified": lift_verified,
-        "elapsed_sec": round(time.time() - t0, 2)
-    }, jf, indent=2)
+        "worker_id": WORKER_ID, "seed_base": SEED_BASE,
+        "solver": "direct-tabucol-sls", "status": status,
+        "verified_4_coloring": verified,
+        "elapsed_seconds": round(time.time() - t0, 2),
+        "max_seconds": MAX_SECONDS
+    }, f, indent=2)

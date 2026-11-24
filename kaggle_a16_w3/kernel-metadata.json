@@ -1,6 +1,6 @@
 {
   "id": "sceevee/a16-kissat-w3",
-  "title": "A16 Kissat Quotient w3",
+  "title": "a16-kissat-w3",
   "code_file": "run_worker.py",
   "language": "python",
   "kernel_type": "script",
