@@ -1,6 +1,7 @@
 import itertools
 import json
 import os
+SHARD = int(os.environ.get("A16_SHARD", SHARD))
 import pathlib
 import subprocess
 import sys
@@ -60,7 +61,7 @@ def run():
     free=[w for w in weights if not (z3.is_true(w) or z3.is_false(w))]
     assert len(free)==91
     solver=z3.Solver()
-    for i in range(2): solver.add(free[i]==bool(SHARD & (1<<i)))
+    for i in range(5): solver.add(free[i]==bool(SHARD & (1<<i)))
     start_time=time.monotonic()
     rounds=0
     try:
@@ -92,8 +93,35 @@ def run():
     finally:
         close(proc)
         pathlib.Path("A16_graph.bin").unlink(missing_ok=True)
-try:
-    run()
-except Exception as exc:
-    report("ERROR",error=str(exc))
-    raise
+def child(shard, outdir, logpath):
+    env = os.environ.copy()
+    env["A16_SHARD"] = str(shard)
+    env["A16_OUT"] = str(outdir)
+    with open(logpath, "w") as log:
+        return subprocess.Popen([sys.executable, __file__], env=env, stdout=log, stderr=subprocess.STDOUT)
+
+if __name__ == "__main__":
+    if os.environ.get("A16_CHILD") == "1":
+        try:
+            run()
+        except Exception as exc:
+            report("ERROR", error=str(exc))
+            raise
+    else:
+        base = SHARD * 4
+        children = []
+        for offset in range(4):
+            shard = base + offset
+            child_out = out / ("shard_%02d" % shard)
+            child_out.mkdir(parents=True, exist_ok=True)
+            env = os.environ.copy()
+            env.update(A16_CHILD="1", A16_SHARD=str(shard), A16_OUT=str(child_out))
+            log = open(out / ("shard_%02d.log" % shard), "w")
+            proc = subprocess.Popen([sys.executable, __file__], env=env, stdout=log, stderr=subprocess.STDOUT)
+            children.append((shard, proc, log))
+        results = []
+        for shard, proc, log in children:
+            code = proc.wait()
+            log.close()
+            results.append({"shard": shard, "exit_code": code})
+        (out / "parallel_status.json").write_text(json.dumps(results, indent=2) + "\\n")
