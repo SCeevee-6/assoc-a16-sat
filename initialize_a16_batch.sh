@@ -54,10 +54,12 @@ for dir in "${dirs[@]}"; do
   dest="$archive/${id##*/}"
   mkdir -p "$dest"
   kaggle kernels output "$id" -p "$dest"
-  if [[ -f "$dest/A16_graph.bin" ]]; then
-    mkdir -p "$archive/graphs/${id##*/}"
-    mv "$dest/A16_graph.bin" "$archive/graphs/${id##*/}/A16_graph.bin"
-  fi
+  while IFS= read -r -d '' graph; do
+    relative=${graph#"$dest"/}
+    graph_copy="$archive/graphs/${id##*/}/$relative"
+    mkdir -p "$(dirname "$graph_copy")"
+    mv "$graph" "$graph_copy"
+  done < <(find "$dest" -type f -name A16_graph.bin -print0)
   git add -f -- "$dest"
   git commit --only -m "Archive A16 seed-extension output for $id ($stamp)" -- "$dest"
   git push origin HEAD:main
