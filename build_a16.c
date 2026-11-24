@@ -41,8 +41,9 @@ static inline int sub_len(uint32_t code, int bits, int pos) {
 }
 
 int main(int argc, char **argv) {
-    int n = (argc > 1) ? atoi(argv) : 16;
-    const char *cnf_path = (argc > 2) ? argv : "A16_sym.cnf";
+    int n = (argc > 1) ? atoi(argv[1]) : 16;
+    const char *cnf_path = (argc > 2) ? argv[2] : "A16_sym.cnf";
+    if (n < 4 || n > 16) return 2;
     int K = n - 2;
     g_bits = 2 * K;
     g_codes = malloc(3000000 * sizeof(uint32_t));
@@ -99,17 +100,13 @@ int main(int argc, char **argv) {
     fwrite(v, sizeof(int32_t), ne, fg);
     fclose(fg);
 
-    /* Break all 24 color symmetries via path v0 - v1 - v2 */
-    int v0 = 0, v1 = v, v2 = -1;
-    for (int64_t e = 0; e < ne; e++) {
-        if (u[e] == v1 && v[e] != v0) { v2 = v[e]; break; }
-        if (v[e] == v1 && u[e] != v0) { v2 = u[e]; break; }
-    }
-
+    if (strcmp(cnf_path, "--graph-only") == 0) return 0;
+    if (!ne) return 2;
+    int v0 = u[0], v1 = v[0];
     FILE *fp = fopen(cnf_path, "w");
     setvbuf(fp, NULL, _IOFBF, 16 * 1024 * 1024);
     int64_t nvars = (int64_t)nv * 4;
-    int64_t ncls = (int64_t)nv * 7 + ne * 4 + 3;
+    int64_t ncls = (int64_t)nv * 7 + ne * 4 + 2;
     fprintf(fp, "p cnf %lld %lld\n", (long long)nvars, (long long)ncls);
 
     for (int i = 0; i < nv; i++) {
@@ -119,7 +116,7 @@ int main(int argc, char **argv) {
                 b+1, b+2, b+1, b+3, b+1, b+4,
                 b+2, b+3, b+2, b+4, b+3, b+4);
     }
-    fprintf(fp, "%d 0\n%d 0\n-%d 0\n", 4*v0+1, 4*v1+2, 4*v2+4);
+    fprintf(fp, "%d 0\n%d 0\n", 4*v0+1, 4*v1+2);
 
     for (int64_t e = 0; e < ne; e++) {
         int a = 4 * u[e], b = 4 * v[e];
@@ -130,3 +127,4 @@ int main(int argc, char **argv) {
     printf("Wrote %s (%lld vars, %lld clauses)\n", cnf_path, (long long)nvars, (long long)ncls);
     return 0;
 }
+
