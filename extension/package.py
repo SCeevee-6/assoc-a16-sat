@@ -4,7 +4,7 @@ import sys
 
 source, target = map(pathlib.Path, sys.argv[1:3])
 shard = int(sys.argv[3])
-assert shard in range(5)
+assert shard in range(8)
 base = pathlib.Path(__file__).resolve().parent
 meta = json.loads((source / "kernel-metadata.json").read_text())
 builder = (base.parent / "build_a16.c").read_text()
