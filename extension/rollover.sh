@@ -24,7 +24,7 @@ for dir in kaggle_a16 kaggle_a16_w{2,3,4,5}; do
   echo "$status" > "$dest/status.txt"
   # Never overwrite a version whose output could not be retrieved.
   kaggle kernels output "$id" -p "$dest" || { echo "Download failed; retaining $id"; continue; }
-  [[ -n $(find "$dest" -type f ! -name status.txt -print -quit) ]] || { echo "No output files; retaining $id"; continue; }
+  # Keep the reproducible 143 MB graph locally, outside the Git-tracked output folder.\n  if [[ -f "$dest/A16_graph.bin" ]]; then\n    mkdir -p "$archive/graphs/${id##*/}"\n    mv "$dest/A16_graph.bin" "$archive/graphs/${id##*/}/A16_graph.bin"\n  fi\n  [[ -n $(find "$dest" -type f ! -name status.txt -print -quit) ]] || { echo "No output files; retaining $id"; continue; }
   # Commit only this archive. Push must succeed before reusing its kernel.
   git add -f -- "$dest"
   git commit --only -m "Archive Kaggle outputs for $id ($stamp)" -- "$dest"
