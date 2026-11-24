@@ -1,0 +1,9 @@
+{
+  "worker_id": 4,
+  "seed_base": 202611244000,
+  "solver": "direct-tabucol-sls",
+  "status": "UNKNOWN",
+  "verified_4_coloring": false,
+  "elapsed_seconds": 41000.94,
+  "max_seconds": 41000
+}
