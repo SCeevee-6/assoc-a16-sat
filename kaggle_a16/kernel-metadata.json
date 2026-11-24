@@ -1,0 +1,13 @@
+{
+  "id": "sceevee/a16-cms-3thread",
+  "title": "a16-cms-3thread",
+  "code_file": "run_kaggle_cms.py",
+  "language": "python",
+  "kernel_type": "script",
+  "is_private": "true",
+  "enable_gpu": "false",
+  "enable_internet": "true",
+  "dataset_sources": [],
+  "competition_sources": [],
+  "kernel_sources": []
+}
