@@ -23,10 +23,11 @@ static void usage(const char*p){fprintf(stderr,"Usage: %s GRAPH.bin --seed N [--
 int main(int argc,char**argv){
  if(argc<2){usage(argv[0]);return 2;}
  const char *graph=argv[1], *out="a16_solution.colors";
- uint64_t seed=1, maxflips=100000000, restartflips=10000000; int have_seed=0;
+ uint64_t seed=1, maxflips=UINT64_MAX, restartflips=10000000; double maxseconds=41000.0; int have_seed=0;
  for(int i=2;i<argc;i++){
   if(!strcmp(argv[i],"--seed")&&i+1<argc){seed=strtoull(argv[++i],NULL,10);have_seed=1;}
   else if(!strcmp(argv[i],"--max-flips")&&i+1<argc)maxflips=strtoull(argv[++i],NULL,10);
+  else if(!strcmp(argv[i],"--max-seconds")&&i+1<argc)maxseconds=strtod(argv[++i],NULL);
   else if(!strcmp(argv[i],"--restart-flips")&&i+1<argc)restartflips=strtoull(argv[++i],NULL,10);
   else if(!strcmp(argv[i],"--out")&&i+1<argc)out=argv[++i]; else {usage(argv[0]);return 2;}
  }

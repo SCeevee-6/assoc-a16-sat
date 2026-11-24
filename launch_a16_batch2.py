@@ -15,7 +15,7 @@ def main():
     ap.add_argument('--workers', type=int, default=4)
     ap.add_argument('--kernel-id', type=int, default=0, help='0..4; reserve a disjoint seed block per Kaggle kernel')
     ap.add_argument('--start-seed', type=int, help='override kernel-based seed block')
-    ap.add_argument('--max-flips', type=int, default=100_000_000)
+    ap.add_argument('--max-flips', type=int, default=2**63-1)\n    ap.add_argument('--max-seconds', type=float, default=41000)
     ap.add_argument('--restart-flips', type=int, default=10_000_000)
     ap.add_argument('--out-dir', default='batch2_out')
     ap.add_argument('--compiler', default=os.environ.get('CC', 'cc'))
@@ -36,7 +36,7 @@ def main():
         dest=out/f'coloring_seed_{seed}.colors'
         log=out/f'worker_{w}.log'
         lf=open(log,'wb')
-        cmd=[str(exe),str(graph),'--seed',str(seed),'--max-flips',str(a.max_flips),'--restart-flips',str(a.restart_flips),'--out',str(dest)]
+        cmd=[str(exe),str(graph),'--seed',str(seed),'--max-flips',str(a.max_flips),'--max-seconds',str(a.max_seconds),'--restart-flips',str(a.restart_flips),'--out',str(dest)]
         proc=subprocess.Popen(cmd,stdout=lf,stderr=subprocess.STDOUT)
         procs.append((proc,lf,w,seed,dest,log))
         manifest['runs'].append({'worker':w,'seed':seed,'pid':proc.pid,'output':str(dest),'log':str(log),'status':'RUNNING'})
