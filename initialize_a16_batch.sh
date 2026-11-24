@@ -11,10 +11,8 @@ run_dir="batch3_codespaces/$(date -u +%Y%m%dT%H%M%SZ)"
 mkdir -p "$run_dir"
 gcc -O3 -Wall -Wextra -Werror=int-conversion build_a16.c -o "$run_dir/build_a16"
 "$run_dir/build_a16" 16 "$run_dir/A16_sym.cnf"
-# Four independently seeded, proof-logging CaDiCaL runs form the unrestricted track.
-for seed in 11 23 37 51; do
-  (cadical --seed="$seed" --proof="$run_dir/cadical_seed_$seed.drat" "$run_dir/A16_sym.cnf" >"$run_dir/cadical_seed_$seed.log" 2>&1) &
-done
+# One unrestricted CaDiCaL run with a positional DRAT proof output (CaDiCaL 1.7.4 syntax).
+(cadical --seed=11 "$run_dir/A16_sym.cnf" "$run_dir/cadical.drat" >"$run_dir/cadical.log" 2>&1) &
 
 # Five Kaggle kernels x four independent prefix shards = 20 extension workers.
 # Together with the four CaDiCaL processes this occupies 24 CPU workers.
@@ -30,9 +28,9 @@ for index in ${!dirs[@]}; do
   rm -rf "$pkg"
 done
 
-echo "Launched 20 seed-extension workers and four proof-logging CaDiCaL jobs."
-echo "Live SAT logs: $run_dir/cadical_seed_*.log"
-echo "Proof files:   $run_dir/cadical_seed_*.drat"
+echo "Launched 20 seed-extension workers and one proof-logging CaDiCaL job."
+echo "Live SAT log: $run_dir/cadical.log"
+echo "Proof file:    $run_dir/cadical.drat"
 echo "Monitor Kaggle with: bash extension/rollover.sh status"
 
 # Wait for Kaggle jobs to finish, then preserve their outputs before reuse.
