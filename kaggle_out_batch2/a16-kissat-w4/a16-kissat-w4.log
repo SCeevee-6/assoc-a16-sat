@@ -1,34 +1,34 @@
-[{"stream_name":"stderr","time":1.42770042,"data":"/tmp/build_a16.c: In function ‘main’:\n"}
-,{"stream_name":"stderr","time":1.427827623,"data":"/tmp/build_a16.c:103:22: warning: initialization of ‘int’ from ‘int32_t *’ {aka ‘int *’} makes integer from pointer without a cast [-Wint-conversion]\n"}
-,{"stream_name":"stderr","time":1.4278426770000001,"data":"  103 |     int v0 = 0, v1 = v, v2 = -1;\n"}
-,{"stream_name":"stderr","time":1.42784677,"data":"      |                      ^\n"}
-,{"stream_name":"stderr","time":2.145497811,"data":"/tmp/a16_sls.c: In function ‘main’:\n"}
-,{"stream_name":"stderr","time":2.145766114,"data":"/tmp/a16_sls.c:29:89: error: stray ‘\\’ in program\n"}
-,{"stream_name":"stderr","time":2.145790299,"data":"   29 |   else if(!strcmp(argv[i],\"--max-flips\")\u0026\u0026i+1\u003cargc)maxflips=strtoull(argv[++i],NULL,10);\\n  else if(!strcmp(argv[i],\"--max-seconds\")\u0026\u0026i+1\u003cargc)maxseconds=strtod(argv[++i],NULL);\n"}
-,{"stream_name":"stderr","time":2.145799504,"data":"      |                                                                                         ^\n"}
-,{"stream_name":"stderr","time":2.147023668,"data":"/tmp/a16_sls.c:29:90: error: ‘n’ undeclared (first use in this function)\n"}
-,{"stream_name":"stderr","time":2.147045729,"data":"   29 |   else if(!strcmp(argv[i],\"--max-flips\")\u0026\u0026i+1\u003cargc)maxflips=strtoull(argv[++i],NULL,10);\\n  else if(!strcmp(argv[i],\"--max-seconds\")\u0026\u0026i+1\u003cargc)maxseconds=strtod(argv[++i],NULL);\n"}
-,{"stream_name":"stderr","time":2.147054329,"data":"      |                                                                                          ^\n"}
-,{"stream_name":"stderr","time":2.147114214,"data":"/tmp/a16_sls.c:29:90: note: each undeclared identifier is reported only once for each function it appears in\n"}
-,{"stream_name":"stderr","time":2.147976352,"data":"/tmp/a16_sls.c:29:91: error: expected ‘;’ before ‘else’\n"}
-,{"stream_name":"stderr","time":2.148004064,"data":"   29 |   else if(!strcmp(argv[i],\"--max-flips\")\u0026\u0026i+1\u003cargc)maxflips=strtoull(argv[++i],NULL,10);\\n  else if(!strcmp(argv[i],\"--max-seconds\")\u0026\u0026i+1\u003cargc)maxseconds=strtod(argv[++i],NULL);\n"}
-,{"stream_name":"stderr","time":2.148012272,"data":"      |                                                                                           ^ ~~~~\n"}
-,{"stream_name":"stderr","time":2.148017747,"data":"      |                                                                                           ;\n"}
-,{"stream_name":"stderr","time":2.150794613,"data":"/tmp/a16_sls.c:30:3: error: ‘else’ without a previous ‘if’\n"}
-,{"stream_name":"stderr","time":2.150819582,"data":"   30 |   else if(!strcmp(argv[i],\"--restart-flips\")\u0026\u0026i+1\u003cargc)restartflips=strtoull(argv[++i],NULL,10);\n"}
-,{"stream_name":"stderr","time":2.150827226,"data":"      |   ^~~~\n"}
-,{"stream_name":"stderr","time":2.160576426,"data":"Traceback (most recent call last):\n"}
-,{"stream_name":"stderr","time":2.161406447,"data":"  File \"/kaggle/src/script.py\", line 21, in \u003cmodule\u003e\n"}
-,{"stream_name":"stderr","time":2.16142834,"data":"    subprocess.run([\"gcc\", \"-O3\", \"-DNDEBUG\", \"-std=c11\", \"/tmp/a16_sls.c\", \"-o\", \"/tmp/a16_sls\"], check=True)\n"}
-,{"stream_name":"stderr","time":2.161435045,"data":"    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
-,{"stream_name":"stderr","time":2.161445614,"data":"  File \"/usr/lib/python3.13/subprocess.py\", line 578, in run\n"}
-,{"stream_name":"stderr","time":2.1614508199999998,"data":"    raise CalledProcessError(retcode, process.args,\n"}
-,{"stream_name":"stderr","time":2.161455986,"data":"                             output=stdout, stderr=stderr)\n"}
-,{"stream_name":"stderr","time":2.16147307,"data":"subprocess.CalledProcessError: Command '['gcc', '-O3', '-DNDEBUG', '-std=c11', '/tmp/a16_sls.c', '-o', '/tmp/a16_sls']' returned non-zero exit status 1.\n"}
-,{"stream_name":"stderr","time":4.890642144,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
-,{"stream_name":"stderr","time":4.890702531,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
-,{"stream_name":"stderr","time":5.211711032,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
-,{"stream_name":"stderr","time":5.211736443,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
-,{"stream_name":"stderr","time":7.055086113,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
-,{"stream_name":"stderr","time":8.256175059,"data":"[NbConvertApp] Writing 316956 bytes to __results__.html\n"}
+[{"stream_name":"stderr","time":2.099277583,"data":"/tmp/build_a16.c: In function ‘main’:\n"}
+,{"stream_name":"stderr","time":2.099460284,"data":"/tmp/build_a16.c:103:22: warning: initialization of ‘int’ from ‘int32_t *’ {aka ‘int *’} makes integer from pointer without a cast [-Wint-conversion]\n"}
+,{"stream_name":"stderr","time":2.099473843,"data":"  103 |     int v0 = 0, v1 = v, v2 = -1;\n"}
+,{"stream_name":"stderr","time":2.099479756,"data":"      |                      ^\n"}
+,{"stream_name":"stderr","time":2.871491569,"data":"/tmp/a16_sls.c: In function ‘main’:\n"}
+,{"stream_name":"stderr","time":2.87156545,"data":"/tmp/a16_sls.c:29:89: error: stray ‘\\’ in program\n"}
+,{"stream_name":"stderr","time":2.871572097,"data":"   29 |   else if(!strcmp(argv[i],\"--max-flips\")\u0026\u0026i+1\u003cargc)maxflips=strtoull(argv[++i],NULL,10);\\n  else if(!strcmp(argv[i],\"--max-seconds\")\u0026\u0026i+1\u003cargc)maxseconds=strtod(argv[++i],NULL);\n"}
+,{"stream_name":"stderr","time":2.871580615,"data":"      |                                                                                         ^\n"}
+,{"stream_name":"stderr","time":2.873005944,"data":"/tmp/a16_sls.c:29:90: error: ‘n’ undeclared (first use in this function)\n"}
+,{"stream_name":"stderr","time":2.873041095,"data":"   29 |   else if(!strcmp(argv[i],\"--max-flips\")\u0026\u0026i+1\u003cargc)maxflips=strtoull(argv[++i],NULL,10);\\n  else if(!strcmp(argv[i],\"--max-seconds\")\u0026\u0026i+1\u003cargc)maxseconds=strtod(argv[++i],NULL);\n"}
+,{"stream_name":"stderr","time":2.873068065,"data":"      |                                                                                          ^\n"}
+,{"stream_name":"stderr","time":2.873073436,"data":"/tmp/a16_sls.c:29:90: note: each undeclared identifier is reported only once for each function it appears in\n"}
+,{"stream_name":"stderr","time":2.873743347,"data":"/tmp/a16_sls.c:29:91: error: expected ‘;’ before ‘else’\n"}
+,{"stream_name":"stderr","time":2.873775822,"data":"   29 |   else if(!strcmp(argv[i],\"--max-flips\")\u0026\u0026i+1\u003cargc)maxflips=strtoull(argv[++i],NULL,10);\\n  else if(!strcmp(argv[i],\"--max-seconds\")\u0026\u0026i+1\u003cargc)maxseconds=strtod(argv[++i],NULL);\n"}
+,{"stream_name":"stderr","time":2.873783687,"data":"      |                                                                                           ^ ~~~~\n"}
+,{"stream_name":"stderr","time":2.873795044,"data":"      |                                                                                           ;\n"}
+,{"stream_name":"stderr","time":2.8737998300000003,"data":"/tmp/a16_sls.c:30:3: error: ‘else’ without a previous ‘if’\n"}
+,{"stream_name":"stderr","time":2.873804221,"data":"   30 |   else if(!strcmp(argv[i],\"--restart-flips\")\u0026\u0026i+1\u003cargc)restartflips=strtoull(argv[++i],NULL,10);\n"}
+,{"stream_name":"stderr","time":2.873812651,"data":"      |   ^~~~\n"}
+,{"stream_name":"stderr","time":2.887175792,"data":"Traceback (most recent call last):\n"}
+,{"stream_name":"stderr","time":2.888089833,"data":"  File \"/kaggle/src/script.py\", line 21, in \u003cmodule\u003e\n"}
+,{"stream_name":"stderr","time":2.888120535,"data":"    subprocess.run([\"gcc\", \"-O3\", \"-DNDEBUG\", \"-std=c11\", \"/tmp/a16_sls.c\", \"-o\", \"/tmp/a16_sls\"], check=True)\n"}
+,{"stream_name":"stderr","time":2.888127967,"data":"    ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n"}
+,{"stream_name":"stderr","time":2.888133262,"data":"  File \"/usr/lib/python3.13/subprocess.py\", line 578, in run\n"}
+,{"stream_name":"stderr","time":2.888137474,"data":"    raise CalledProcessError(retcode, process.args,\n"}
+,{"stream_name":"stderr","time":2.888141624,"data":"                             output=stdout, stderr=stderr)\n"}
+,{"stream_name":"stderr","time":2.88817584,"data":"subprocess.CalledProcessError: Command '['gcc', '-O3', '-DNDEBUG', '-std=c11', '/tmp/a16_sls.c', '-o', '/tmp/a16_sls']' returned non-zero exit status 1.\n"}
+,{"stream_name":"stderr","time":6.490429655,"data":"/usr/local/lib/python3.13/dist-packages/mistune.py:435: SyntaxWarning: invalid escape sequence '\\|'\n"}
+,{"stream_name":"stderr","time":6.49049857,"data":"  cells[i][c] = re.sub('\\\\\\\\\\|', '|', cell)\n"}
+,{"stream_name":"stderr","time":6.967967214,"data":"/usr/local/lib/python3.13/dist-packages/nbconvert/filters/filter_links.py:36: SyntaxWarning: invalid escape sequence '\\_'\n"}
+,{"stream_name":"stderr","time":6.968031116,"data":"  text = re.sub(r'_', '\\_', text) # Escape underscores in display text\n"}
+,{"stream_name":"stderr","time":9.485378532,"data":"[NbConvertApp] Converting notebook __script__.ipynb to html\n"}
+,{"stream_name":"stderr","time":11.040291984,"data":"[NbConvertApp] Writing 316956 bytes to __results__.html\n"}
 ]
